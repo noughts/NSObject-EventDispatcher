@@ -14,21 +14,16 @@
 -(id)addEventListener:(NSString*)name usingBlock:(void (^)(NSNotification* notification))block{
 	// objectがポイント。ここに自分自身を渡すことにより、自分自身からpostされた通知にのみ限定して反応するようになります。
 	id observer = [[NSNotificationCenter defaultCenter] addObserverForName:name object:self queue:nil usingBlock:block];
-	[self.observersTable addObject:observer];
 	return observer;
 }
 
 
-/// 全てのイベントリスナを解除
--(void)removeAllEventListener:(id)notificationObserver{
-	// block で add したリスナを解除
-	for ( id observer in self.observersTable.allObjects ){
+/// 指定した配列内のオブザーバーのイベントリスンを全て解除
+// blockを使ってaddEventListenerした返り値を配列に保持していき、これに渡すと一気に解除できます。
+-(void)removeEventListeners:(NSArray*)observers{
+	for (id observer in observers) {
 		[[NSNotificationCenter defaultCenter] removeObserver:observer];
 	}
-	[self.observersTable removeAllObjects];
-	
-	// selector で add したリスナを解除
-	[[NSNotificationCenter defaultCenter] removeObserver:notificationObserver];
 }
 
 
@@ -57,18 +52,6 @@
 -(void)dispatchEventWithNotification:(NSNotification*)notification{
 	NSNotification* newNotification = [NSNotification notificationWithName:notification.name object:self userInfo:notification.userInfo];
 	[[NSNotificationCenter defaultCenter] postNotification:newNotification];
-}
-
-
-
-/// blockを使ったときのオブザーバーをremoveEventListenerする時用に保持するためのテーブル
--(NSHashTable*)observersTable{
-	NSHashTable* observers = objc_getAssociatedObject( self, _cmd );
-	if( observers == nil ){
-		observers = [NSHashTable weakObjectsHashTable];
-		objc_setAssociatedObject( self, _cmd, observers, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-	}
-	return observers;
 }
 
 

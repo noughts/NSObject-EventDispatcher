@@ -30,8 +30,9 @@
 -(void)dispatchEvent:(NSString*)name userInfo:(NSDictionary*)userInfo;
 -(void)removeEventListener:(id)notificationObserver;
 
-/// 全てのイベントリスナを解除
--(void)removeAllEventListener:(id)notificationObserver;
+/// 指定した配列内のオブザーバーのイベントリスンを全て解除
+// blockを使ってaddEventListenerした返り値を配列に保持していき、これに渡すと一気に解除できます。
+-(void)removeEventListeners:(NSArray*)observers;
 
 /// イベント監視を停止
 -(void)removeEventListener:(NSString*)name observer:(UIViewController*)observer;

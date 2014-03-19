@@ -14,24 +14,30 @@
 - (void)configureView;
 @end
 
-@implementation DetailViewController
+@implementation DetailViewController{
+	NSMutableArray* _observers;
+}
 
 - (void)viewDidLoad{
     [super viewDidLoad];
 	[self configureView];
 	
+	_observers = [@[] mutableCopy];
+	
 	AppDelegate* ad = [UIApplication sharedApplication].delegate;
-	[ad addEventListener:@"applicationDidEnterBackground:" usingBlock:^(NSNotification *notification) {
+	id observer1 = [ad addEventListener:@"applicationDidEnterBackground:" usingBlock:^(NSNotification *notification) {
 		NSLog( @"app did enter background" );
 	}];
-	[ad addEventListener:@"applicationWillEnterForeground:" usingBlock:^(NSNotification *notification) {
+	id observer2 = [ad addEventListener:@"applicationWillEnterForeground:" usingBlock:^(NSNotification *notification) {
 		NSLog( @"app will enter foreground" );
 	}];
+	[_observers addObject:observer1];
+	[_observers addObject:observer2];
 }
 
 -(void)dealloc{
 	AppDelegate* ad = [UIApplication sharedApplication].delegate;
-	[ad removeAllEventListener:self];
+	[ad removeEventListeners:_observers];
 }
 
 
